@@ -5,7 +5,7 @@
 const SITE_URL = 'https://undesire1.com';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': SITE_URL,
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type'
 };
