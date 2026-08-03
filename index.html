@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNDESIRE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="Undesire-20260803T000428Z-1-001/Undesire/U.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg: #0a0908;
+    --bg-2: #120e0d;
+    --ivory: #df0000;
+    --ivory-dim: #fcfcfc;
+    --crimson: #6e1c29;
+    --crimson-bright: #a52f42;
+    --gold: #a98a4e;
+    --line: #2b2521;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: url("Undesire-20260803T000428Z-1-001/Undesire/Pruebas\ fondo/2 prueba.jpg") no-repeat center center fixed;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color:var(--ivory);
+    font-family:'Cormorant Garamond', serif;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--crimson);color:var(--ivory);}
+
+  .noise{
+    position:fixed;inset:0;pointer-events:none;z-index:999;
+    opacity:0.04;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:22px 44px;
+    background:linear-gradient(180deg, rgba(10,9,8,0.95), rgba(10,9,8,0));
+    font-family:'Cinzel', serif;
+    font-size:13px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+  }
+  header nav{display:flex;gap:32px;}
+  header nav a{color:var(--ivory-dim);text-decoration:none;transition:color .2s;}
+  header nav a:hover{color:var(--crimson-bright);}
+  .header-actions{display:flex;align-items:center;gap:12px;}
+  .icon-btn{
+    background:none;border:1px solid var(--gold);color:var(--ivory);
+    font-family:'Cinzel',serif;font-size:12px;padding:9px 16px;
+    cursor:pointer;letter-spacing:0.15em;text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;
+  }
+  .icon-btn:hover{background:var(--gold);color:#1a1409;}
+  .user-email{font-size:11px;color:var(--ivory-dim);letter-spacing:0.05em;text-transform:none;font-family:'Cormorant Garamond',serif;font-style:italic;}
+
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;position:relative;
+    background: radial-gradient(ellipse at 50% 15%, rgba(110,28,41,0.22), transparent 65%);
+    padding:140px 20px 60px;
+  }
+  .flourish{width:180px;height:auto;opacity:0.7;margin-bottom:26px;}
+  .eyebrow{
+    font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.4em;
+    color:var(--gold);text-transform:uppercase;margin-bottom:22px;
+  }
+  h1.title{
+    font-family:'Cinzel Decorative', serif;
+    font-weight:700;
+    font-size:clamp(56px, 13vw, 150px);
+    line-height:1;
+    letter-spacing:0.03em;
+    color:var(--ivory);
+    position:relative;
+    display:inline-block;
+    cursor:default;
+  }
+  h1.title::after{
+    content:"UNDESIRE";
+    position:absolute;left:0;top:100%;width:100%;
+    transform:scaleY(-1);
+    background:linear-gradient(180deg, rgba(242,236,225,0.18), transparent 70%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    -webkit-text-fill-color:transparent;
+    pointer-events:none;
+  }
+  .tagline{
+    margin-top:30px;font-size:19px;font-style:italic;color:var(--ivory-dim);
+    letter-spacing:0.02em;max-width:540px;font-weight:400;
+  }
+  .hero-actions{margin-top:46px;display:flex;gap:16px;}
+  .btn{
+    font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:0.15em;
+    text-transform:uppercase;padding:15px 30px;text-decoration:none;
+    border:1px solid var(--ivory);color:var(--ivory);transition:all .25s;
+    background:none;cursor:pointer;
+  }
+  .btn.solid{background:var(--crimson);border-color:var(--crimson);}
+  .btn:hover{background:var(--ivory);color:var(--bg);}
+  .btn.solid:hover{background:var(--crimson-bright);border-color:var(--crimson-bright);color:var(--ivory);}
+
+  section{padding:120px 40px;max-width:1180px;margin:0 auto;position:relative;}
+  .section-head{text-align:center;margin-bottom:60px;}
+  .section-head h2{
+    font-family:'Cinzel', serif;font-weight:600;
+    font-size:clamp(28px,4vw,44px);text-transform:uppercase;letter-spacing:0.1em;
+    margin-bottom:14px;
+  }
+  .section-head .tag{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--ivory-dim);}
+  .divider{width:120px;height:1px;background:var(--gold);margin:18px auto 0;position:relative;}
+  .divider::before{content:"❖";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    background:var(--bg);color:var(--gold);font-size:12px;padding:0 10px;}
+
+  #tour ul{list-style:none;}
+  #tour li{
+    display:grid;grid-template-columns:150px 1fr auto;gap:24px;align-items:center;
+    padding:24px 0;border-bottom:1px solid var(--line);
+  }
+  #tour li .date{font-family:'Cinzel',serif;color:var(--gold);font-size:14px;letter-spacing:0.05em;}
+  #tour li .place strong{display:block;font-weight:600;font-size:21px;letter-spacing:0.01em;}
+  #tour li .place span{color:var(--ivory-dim);font-size:15px;font-style:italic;}
+  #tour li a{color:var(--ivory);border:1px solid var(--line);padding:9px 20px;text-decoration:none;
+    font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;transition:.2s;}
+  #tour li a:hover{border-color:var(--crimson-bright);color:var(--crimson-bright);}
+  #tour .empty-note{text-align:center;color:var(--ivory-dim);font-style:italic;padding:20px 0;}
+
+  .members{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px;margin-top:10px;}
+  .member{background:var(--bg-2);border:1px solid var(--line);overflow:hidden;}
+  .member .photo{
+    width:100%;aspect-ratio:4/5;position:relative;overflow:hidden;
+    background:radial-gradient(circle at 50% 30%, var(--crimson-bright), var(--bg-2) 75%);
+  }
+  .member .photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:grayscale(15%) contrast(1.05);}
+  .member .caption{padding:20px 18px 16px;text-align:center;}
+  .member h4{font-family:'Cinzel Decorative';font-weight:700;font-size:20px;letter-spacing:0.02em;}
+  .member .caption span{color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;display:block;margin-top:6px;}
+  .member .member-btn{
+    display:block;width:100%;text-align:center;padding:15px;
+    background:var(--crimson);color:var(--ivory);text-decoration:none;
+    font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;
+    transition:.2s;
+  }
+  .member .member-btn:hover{background:var(--crimson-bright);}
+
+  .albums{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:32px;}
+  .album{background:var(--bg-2);border:1px solid var(--line);padding:26px;}
+  .cover{
+    width:100%;aspect-ratio:1;margin-bottom:20px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg, var(--crimson) 0%, #150f0d 65%);
+    border:1px solid var(--gold);
+  }
+  .cover .mark{
+    position:absolute;bottom:14px;left:14px;font-family:'Cinzel';font-size:11px;
+    letter-spacing:0.15em;color:rgba(242,236,225,0.8);
+  }
+  .album h3{font-family:'Cinzel Decorative';font-weight:700;font-size:21px;letter-spacing:0.02em;}
+  .album p{color:var(--ivory-dim);font-size:14px;margin-top:8px;font-style:italic;}
+
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;}
+  .about-grid p{color:var(--ivory-dim);line-height:1.85;font-size:17px;margin-bottom:18px;}
+  .stat-line{display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line);font-size:15px;}
+  .stat-line span:first-child{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;}
+
+  .shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:30px;}
+  .product{background:var(--bg-2);border:1px solid var(--line);display:flex;flex-direction:column;}
+  .product-img{
+    aspect-ratio:1;position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    background:#150f0d;border-bottom:1px solid var(--gold);
+  }
+  .product-img svg{width:52%;height:52%;opacity:0.9;}
+  .product-body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .product-body h4{font-family:'Cinzel';font-weight:600;font-size:17px;letter-spacing:0.03em;text-transform:uppercase;}
+  .product-body .price{font-family:'Cinzel',serif;color:var(--gold);font-size:15px;}
+  .product-body .desc{color:var(--ivory-dim);font-size:14px;font-style:italic;line-height:1.5;}
+  .add-btn{
+    margin-top:auto;background:none;border:1px solid var(--line);color:var(--ivory);
+    font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+    padding:12px;cursor:pointer;transition:.2s;text-align:center;text-decoration:none;display:block;
+  }
+  .add-btn:hover{background:var(--crimson);border-color:var(--crimson);}
+  .add-btn.added{background:var(--gold);border-color:var(--gold);color:#1a1409;}
+
+  footer{
+    border-top:1px solid var(--line);padding:55px 40px;text-align:center;
+    font-family:'Cinzel',monospace;font-size:12px;color:var(--ivory-dim);
+    letter-spacing:0.1em;
+  }
+  footer .socials{display:flex;flex-wrap:wrap;justify-content:center;gap:26px;margin-bottom:22px;}
+  footer .socials a{color:var(--ivory);text-decoration:none;text-transform:uppercase;font-size:12px;}
+  footer .socials a:hover{color:var(--crimson-bright);}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;
+    display:none;align-items:center;justify-content:center;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--bg-2);border:1px solid var(--gold);padding:40px;
+    width:min(400px,90vw);position:relative;
+  }
+  .modal-box h3{font-family:'Cinzel Decorative';font-weight:700;font-size:24px;text-transform:uppercase;margin-bottom:24px;text-align:center;}
+  .modal-box .close-modal{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--ivory);font-size:22px;cursor:pointer;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  .field input{
+    width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ivory);
+    padding:12px 14px;font-family:'Cormorant Garamond',serif;font-size:16px;
+  }
+  .field input:focus{outline:none;border-color:var(--gold);}
+  .modal-submit{
+    width:100%;background:var(--crimson);border:1px solid var(--crimson);color:var(--ivory);
+    font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.15em;text-transform:uppercase;
+    padding:15px;cursor:pointer;transition:.2s;margin-top:8px;
+  }
+  .modal-submit:hover{background:var(--crimson-bright);}
+  .modal-switch{text-align:center;margin-top:18px;font-size:14px;font-style:italic;color:var(--ivory-dim);}
+  .modal-switch a{color:var(--gold);cursor:pointer;text-decoration:underline;}
+  .modal-msg{font-size:13px;text-align:center;margin-top:14px;font-style:italic;}
+  .modal-msg.error{color:var(--crimson-bright);}
+  .modal-msg.ok{color:var(--gold);}
+
+  .cart-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:300;
+    opacity:0;pointer-events:none;transition:opacity .25s;
+  }
+  .cart-overlay.open{opacity:1;pointer-events:auto;}
+  .cart-drawer{
+    position:fixed;top:0;right:0;bottom:0;width:min(430px,92vw);
+    background:var(--bg-2);border-left:1px solid var(--gold);z-index:301;
+    transform:translateX(100%);transition:transform .3s ease;
+    display:flex;flex-direction:column;
+  }
+  .cart-drawer.open{transform:translateX(0);}
+  .cart-head{display:flex;justify-content:space-between;align-items:center;padding:28px;border-bottom:1px solid var(--line);}
+  .cart-head h3{font-family:'Cinzel Decorative';font-weight:700;font-size:23px;text-transform:uppercase;}
+  .cart-head button{background:none;border:none;color:var(--ivory);font-size:24px;cursor:pointer;}
+  .cart-items{flex:1;overflow-y:auto;padding:20px 28px;}
+  .cart-empty{color:var(--ivory-dim);font-style:italic;font-size:15px;padding:40px 0;text-align:center;}
+  .cart-item{display:grid;grid-template-columns:56px 1fr auto;gap:14px;padding:18px 0;border-bottom:1px solid var(--line);align-items:center;}
+  .cart-item .thumb{width:56px;height:56px;background:var(--crimson);border:1px solid var(--gold);flex-shrink:0;}
+  .cart-item h5{font-size:15px;font-weight:600;letter-spacing:0.02em;}
+  .cart-item .meta{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:13px;}
+  .cart-item .qty-btn{background:none;border:1px solid var(--line);color:var(--ivory);width:22px;height:22px;cursor:pointer;font-size:13px;line-height:1;}
+  .cart-item .remove{color:var(--ivory-dim);background:none;border:none;cursor:pointer;font-size:12px;text-decoration:underline;justify-self:end;font-style:italic;}
+  .cart-item .line-price{font-family:'Cinzel',serif;color:var(--gold);}
+  .cart-foot{padding:28px;border-top:1px solid var(--line);}
+  .cart-total{display:flex;justify-content:space-between;font-family:'Cinzel',serif;font-size:17px;margin-bottom:20px;}
+  .checkout-btn{width:100%;background:var(--crimson);border:1px solid var(--crimson);color:var(--ivory);
+    font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.15em;text-transform:uppercase;
+    padding:17px;cursor:pointer;transition:.2s;}
+  .checkout-btn:hover{background:var(--crimson-bright);border-color:var(--crimson-bright);}
+  .cart-note{font-size:12px;color:var(--ivory-dim);margin-top:14px;text-align:center;font-style:italic;}
+
+  @media (max-width:720px){
+    header{padding:16px 20px;}
+    header nav{display:none;}
+    section{padding:80px 20px;}
+    .about-grid{grid-template-columns:1fr;}
+    #tour li{grid-template-columns:1fr;gap:8px;text-align:left;}
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<header>
+  <img src="Undesire-20260803T000428Z-1-001/Undesire/New LOGO.png" alt="Undesire" style="height:160px;width:auto;display:block;">
+  <nav>
+    <a href="#music">Música</a>
+    <a href="#tour">Giras</a>
+    <a href="#shop">Tienda</a>
+    <a href="#about">Banda</a>
+  </nav>
+  <div class="header-actions">
+    <span class="user-email" id="userEmail" style="display:none;"></span>
+    <button class="icon-btn" id="authBtn">Iniciar sesión</button>
+    <button class="icon-btn" id="cartToggle">Carrito (<span id="cartCount">0</span>)</button>
+  </div>
+</header>
+
+<section class="hero">
+  <svg class="flourish" viewBox="0 0 200 40" fill="none" stroke="#a98a4e" stroke-width="1">
+    <path d="M10 20 Q50 5 100 20 Q150 35 190 20"/>
+    <circle cx="100" cy="20" r="4" fill="#a98a4e" stroke="none"/>
+  </svg>
+  <div class="eyebrow">Visual Kei · Santiago, Chile · desde 2016</div>
+  <img src="Undesire-20260803T000428Z-1-001/Undesire/logo.png" alt="Undesire" style="height:500px;width:auto;display:block;margin:0 auto;">
+  <p class="tagline">Maquillaje, vestuario y puesta en escena al servicio de la música. Djent, metal progresivo y rock gótico con la teatralidad del visual kei japonés.</p>
+  <div class="hero-actions">
+    <a href="#music" class="btn solid">Escuchar</a>
+    <a href="#shop" class="btn">Ver tienda</a>
+  </div>
+</section>
+
+<section id="music">
+  <!-- SECCIÓN SENCILLOS -->
+  <div class="section-head">
+    <h2>Discografía</h2>
+    <span class="tag">sencillos</span>
+    <div class="divider"></div>
+  </div>
+  
+  <div class="albums">
+    <div class="album">
+      <div class="cover"><img src="Undesire-20260803T000428Z-1-001/Undesire/Portadas/portada.png" alt="Endless" width="100%" height="100%" style="object-fit: cover;"></div>
+      <h3>Endless</h3>
+      <p>Single</p>
+    </div>
+    <div class="album">
+      <div class="cover"><img src="Undesire-20260803T000428Z-1-001/Undesire/Portadas/condemned.png" alt="Condemned" width="100%" height="100%" style="object-fit: cover;"></div>
+      <h3>Condemned</h3>
+      <p>Single</p>
+    </div>
+    <div class="album">
+      <div class="cover"><img src="Undesire-20260803T000428Z-1-001/Undesire/Portadas/inner.png" alt="Inner Demon" width="100%" height="100%" style="object-fit: cover;"></div>
+      <h3>Inner Demon</h3>
+      <p>Single</p>
+    </div>
+    <div class="album">
+      <div class="cover"><img src="Undesire-20260803T000428Z-1-001/Undesire/Portadas/eventide.png" alt="Eventide" width="100%" height="100%" style="object-fit: cover;"></div>
+      <h3>Eventide</h3>
+      <p>Single</p>
+    </div>
+  </div>
+
+  <!-- SEPARADOR Y SECCIÓN ÁLBUM -->
+  <div class="section-head" style="margin-top: 80px;">
+    <span class="tag">álbumes</span>
+    <div class="divider"></div>
+  </div>
+
+  <div class="albums" style="justify-content: center;">
+    <div class="album" style="max-width: 280px; width: 100%; margin: 0 auto;">
+      <div class="cover"><img src="Undesire-20260803T000428Z-1-001/Undesire/Portadas/ECLIPSE-PORTADA-1-1.jpg" alt="Eclipse" width="100%" height="100%" style="object-fit: cover;"></div>
+      <h3>Eclipse</h3>
+      <p>Album</p>
+    </div>
+  </div>
+</section>
+  
+</section>
+
+<section id="tour">
+  <div class="section-head">
+    <h2>Giras</h2>
+    <span class="tag">próximas fechas</span>
+    <div class="divider"></div>
+  </div>
+  <ul>
+    <li>
+      <span class="date">POR CONFIRMAR</span>
+      <span class="place"><strong>Reemplaza con tu venue</strong><span>Ciudad, país</span></span>
+      <a href="#">Entradas</a>
+    </li>
+  </ul>
+  <p class="empty-note">Aún no tenemos fechas confirmadas cargadas — reemplaza este bloque con tus próximas presentaciones reales.</p>
+</section>
+
+<section id="shop">
+  <div class="section-head">
+    <h2>Tienda</h2>
+    <span class="tag">merch oficial</span>
+    <div class="divider"></div>
+  </div>
+  <div class="shop-grid" id="shopGrid"></div>
+</section>
+
+<section id="about">
+  <div class="section-head">
+    <h2>La banda</h2>
+    <span class="tag">Santiago, Chile · desde 2016</span>
+    <div class="divider"></div>
+  </div>
+  <div class="about-grid">
+    <div>
+      <p>Undesire es una banda de visual kei formada en Santiago en 2016. Su música combina djent, metal progresivo y rock gótico con una fuerte influencia del j-rock, sumando elementos orquestales y teclados que construyen atmósferas oscuras y místicas.</p>
+      <p>El maquillaje, el vestuario y la puesta en escena son parte central de su identidad: cada show busca realzar las emociones detrás de cada canción con la misma teatralidad que caracteriza al visual kei japonés.</p>
+    </div>
+    <div>
+      <div class="stat-line"><span>Formación</span><span>2016, Santiago</span></div>
+      <div class="stat-line"><span>Integrantes</span><span>5</span></div>
+      <div class="stat-line"><span>Sencillos</span><span>4</span></div>
+      <div class="stat-line"><span>Género</span><span>Visual Kei / Djent / Metal progresivo</span></div>
+    </div>
+  </div>
+  <div class="members">
+    <div class="member">
+      <div class="photo"><img src="Undesire-20260803T000428Z-1-001/Undesire/miembros/lugzan.png" alt="Voz"></div>
+      <div class="caption"><h4>Lugzan</h4><span>Voz</span></div>
+      <a class="member-btn" href="https://instagram.com/undesire.band" target="_blank" rel="noopener">Ver más</a>
+    </div>
+    <div class="member">
+      <div class="photo"><img src="Undesire-20260803T000428Z-1-001/Undesire/miembros/Sora%201.png" alt="Sora"></div>
+      <div class="caption"><h4>Sora</h4><span>Guitarra</span></div>
+      <a class="member-btn" href="https://instagram.com/undesire.band" target="_blank" rel="noopener">Ver más</a>
+    </div>
+    <div class="member">
+      <div class="photo"><img src="Undesire-20260803T000428Z-1-001/Undesire/miembros/Uro%201.png" alt="Uro"></div>
+      <div class="caption"><h4>Uro</h4><span>Guitarra</span></div>
+      <a class="member-btn" href="https://instagram.com/undesire.band" target="_blank" rel="noopener">Ver más</a>
+    </div>
+    <div class="member">
+      <div class="photo"><img src="Undesire-20260803T000428Z-1-001/Undesire/miembros/Aza%201.png" alt="Azazel"></div>
+      <div class="caption"><h4>Azazel</h4><span>Bajo</span></div>
+      <a class="member-btn" href="https://instagram.com/undesire.band" target="_blank" rel="noopener">Ver más</a>
+    </div>
+    <div class="member">
+      <div class="photo"><img src="Undesire-20260803T000428Z-1-001/Undesire/miembros/Eli%201.png" alt="Eligos"></div>
+      <div class="caption"><h4>Eligos</h4><span>Batería</span></div>
+      <a class="member-btn" href="https://instagram.com/undesire.band" target="_blank" rel="noopener">Ver más</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="socials">
+    <a href="https://instagram.com/undesire.band" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://web.facebook.com/Undesireofficial" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://x.com/Undesire_Band" target="_blank" rel="noopener">X</a>
+    <a href="https://undesire.bandcamp.com" target="_blank" rel="noopener">Bandcamp</a>
+    <a href="https://music.apple.com/mx/artist/undesire/1326551414" target="_blank" rel="noopener">Apple Music</a>
+  </div>
+  <div>© 2026 UNDESIRE. Todos los derechos reservados.</div>
+</footer>
+
+<!-- Modal de login / registro -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <button class="close-modal" id="closeAuthModal">&times;</button>
+    <h3 id="authTitle">Iniciar sesión</h3>
+    <div class="field">
+      <label>Correo</label>
+      <input type="email" id="authEmail" placeholder="tu@correo.com">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="authPassword" placeholder="••••••••">
+    </div>
+    <button class="modal-submit" id="authSubmit">Iniciar sesión</button>
+    <p class="modal-switch">¿No tienes cuenta? <a id="authSwitch">Regístrate aquí</a></p>
+    <p class="modal-msg" id="authMsg"></p>
+  </div>
+</div>
+
+<!-- Carrito -->
+<div class="cart-overlay" id="overlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h3>Tu carrito</h3>
+    <button id="closeCart">&times;</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="cart-total"><span>Total</span><span id="cartTotal">$0</span></div>
+    <button class="checkout-btn" id="checkoutBtn">Ir a pagar</button>
+    <p class="cart-note">El pago con Mercado Pago (tarjetas y Redcompra) se activa en el siguiente paso, una vez conectada la función de checkout.</p>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 1) CONFIGURA TU SUPABASE AQUÍ
+// Ve a supabase.com -> tu proyecto -> Project Settings -> API
+// y reemplaza estos dos valores.
+// ============================================================
+const SUPABASE_URL = 'https://jovpgxayrzjttgkcveqn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_2QLBZ7DdSV9Z9Nlyl4LaVw_yz76cjKp';
+let sb = null;
+try {
+  if (window.supabase && typeof window.supabase.createClient === 'function') {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } else {
+    console.warn('Supabase no cargó correctamente (revisa la conexión a internet o el CDN).');
+  }
+} catch(e) {
+  console.error('Error creando cliente Supabase:', e);
+}
+
+const products = [
+  {id:'p1', name:'Blusa Endless', price:22990, desc:'Manga abombada, encaje negro en puños.', icon:'shirt'},
+  {id:'p2', name:'Single Endless (Digital)', price:2990, desc:'Descarga digital en alta calidad.', icon:'vinyl'},
+  {id:'p3', name:'Abrigo Undesire', price:44990, desc:'Corte victoriano, botonadura doble.', icon:'hoodie'},
+  {id:'p4', name:'Póster Undesire', price:9990, desc:'Póster A2 papel mate con arte de la banda.', icon:'poster'},
+  {id:'p5', name:'Choker Espinas', price:11990, desc:'Terciopelo negro con dije de rosa.', icon:'beanie'},
+  {id:'p6', name:'Set de Pines (x3)', price:7990, desc:'Rosa, espejo y máscara esmaltados.', icon:'pin'}
+];
+
+const icons = {
+  shirt: '<svg viewBox="0 0 100 100" fill="none" stroke="#f2ece1" stroke-width="2.5"><path d="M30 15 L15 30 L25 42 L30 36 L30 88 L70 88 L70 36 L75 42 L85 30 L70 15 L60 15 Q50 25 40 15 Z"/></svg>',
+  vinyl: '<svg viewBox="0 0 100 100" fill="none" stroke="#f2ece1" stroke-width="2.5"><circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="14"/><circle cx="50" cy="50" r="4" fill="#f2ece1"/></svg>',
+  hoodie: '<svg viewBox="0 0 100 100" fill="none" stroke="#f2ece1" stroke-width="2.5"><path d="M35 20 Q50 8 65 20 L80 34 L70 46 L64 40 L64 90 L36 90 L36 40 L30 46 L20 34 Z"/></svg>',
+  poster: '<svg viewBox="0 0 100 100" fill="none" stroke="#f2ece1" stroke-width="2.5"><rect x="20" y="10" width="60" height="80"/><line x1="30" y1="30" x2="70" y2="30"/><line x1="30" y1="45" x2="70" y2="45"/><line x1="30" y1="60" x2="55" y2="60"/></svg>',
+  beanie: '<svg viewBox="0 0 100 100" fill="none" stroke="#f2ece1" stroke-width="2.5"><ellipse cx="50" cy="45" rx="30" ry="15"/><line x1="50" y1="60" x2="50" y2="80"/><circle cx="50" cy="85" r="6"/></svg>',
+  pin: '<svg viewBox="0 0 100 100" fill="none" stroke="#f2ece1" stroke-width="2.5"><circle cx="35" cy="40" r="14"/><circle cx="65" cy="40" r="14"/><circle cx="50" cy="66" r="14"/></svg>'
+};
+
+function fmt(n){ return '$' + n.toLocaleString('es-CL'); }
+
+let currentUser = null;
+let isRegisterMode = false;
+let localCart = {}; // respaldo en memoria mientras no hay sesión
+
+// ---------- RENDER TIENDA ----------
+function renderShop(){
+  const grid = document.getElementById('shopGrid');
+  grid.innerHTML = products.map(p => `
+    <div class="product">
+      <div class="product-img">${icons[p.icon]}</div>
+      <div class="product-body">
+        <h4>${p.name}</h4>
+        <div class="price">${fmt(p.price)}</div>
+        <div class="desc">${p.desc}</div>
+        <button class="add-btn" data-id="${p.id}">Agregar al carrito</button>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', () => addToCart(btn.dataset.id));
+  });
+}
+
+// ---------- AUTENTICACIÓN ----------
+const authModal = document.getElementById('authModal');
+const authBtn = document.getElementById('authBtn');
+const authTitle = document.getElementById('authTitle');
+const authSubmit = document.getElementById('authSubmit');
+const authSwitch = document.getElementById('authSwitch');
+const authMsg = document.getElementById('authMsg');
+const userEmailEl = document.getElementById('userEmail');
+
+authBtn.addEventListener('click', () => {
+  if(currentUser){
+    sb.auth.signOut();
+    return;
+  }
+  authModal.classList.add('open');
+});
+document.getElementById('closeAuthModal').addEventListener('click', () => authModal.classList.remove('open'));
+
+function toggleAuthMode(){
+  isRegisterMode = !isRegisterMode;
+  authTitle.textContent = isRegisterMode ? 'Crear cuenta' : 'Iniciar sesión';
+  authSubmit.textContent = isRegisterMode ? 'Registrarme' : 'Iniciar sesión';
+  const switchP = document.querySelector('.modal-switch');
+  switchP.innerHTML = isRegisterMode
+    ? '¿Ya tienes cuenta? <a id="authSwitch">Inicia sesión</a>'
+    : '¿No tienes cuenta? <a id="authSwitch">Regístrate aquí</a>';
+  document.getElementById('authSwitch').addEventListener('click', toggleAuthMode);
+  authMsg.textContent = '';
+}
+authSwitch.addEventListener('click', toggleAuthMode);
+
+authSubmit.addEventListener('click', async () => {
+  if(!sb){ authMsg.textContent = 'Falta configurar Supabase (SUPABASE_URL / SUPABASE_ANON_KEY).'; authMsg.className='modal-msg error'; return; }
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  if(!email || !password){ authMsg.textContent = 'Completa correo y contraseña.'; authMsg.className='modal-msg error'; return; }
+
+  authMsg.textContent = 'Procesando...'; authMsg.className='modal-msg';
+
+  if(isRegisterMode){
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error){ authMsg.textContent = error.message; authMsg.className='modal-msg error'; return; }
+    authMsg.textContent = 'Cuenta creada. Revisa tu correo si se pide confirmación, o ya puedes iniciar sesión.';
+    authMsg.className='modal-msg ok';
+  } else {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){ authMsg.textContent = error.message; authMsg.className='modal-msg error'; return; }
+    authModal.classList.remove('open');
+  }
+});
+
+if(sb){
+  sb.auth.onAuthStateChange((event, session) => {
+    currentUser = session ? session.user : null;
+    updateAuthUI();
+    loadCart();
+  });
+  sb.auth.getSession().then(({data}) => {
+    currentUser = data.session ? data.session.user : null;
+    updateAuthUI();
+    loadCart();
+  });
+}
+
+function updateAuthUI(){
+  if(currentUser){
+    userEmailEl.style.display = 'inline';
+    userEmailEl.textContent = currentUser.email;
+    authBtn.textContent = 'Cerrar sesión';
+  } else {
+    userEmailEl.style.display = 'none';
+    authBtn.textContent = 'Iniciar sesión';
+  }
+}
+
+// ---------- CARRITO (persistido en Supabase por usuario) ----------
+async function addToCart(productId){
+  if(!currentUser){
+    authModal.classList.add('open');
+    authMsg.textContent = 'Inicia sesión para agregar productos al carrito.';
+    authMsg.className = 'modal-msg error';
+    return;
+  }
+  const { data: existing } = await sb
+    .from('cart_items')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .eq('product_id', productId)
+    .maybeSingle();
+
+  if(existing){
+    await sb.from('cart_items').update({ quantity: existing.quantity + 1 }).eq('id', existing.id);
+  } else {
+    await sb.from('cart_items').insert({ user_id: currentUser.id, product_id: productId, quantity: 1 });
+  }
+  loadCart();
+}
+
+async function loadCart(){
+  if(!currentUser || !sb){
+    renderCart({});
+    return;
+  }
+  const { data, error } = await sb
+    .from('cart_items')
+    .select('*')
+    .eq('user_id', currentUser.id);
+
+  if(error){ console.error(error); return; }
+  const cartMap = {};
+  (data || []).forEach(row => { cartMap[row.product_id] = { qty: row.quantity, rowId: row.id }; });
+  renderCart(cartMap);
+}
+
+let currentCartMap = {};
+
+function renderCart(cartMap){
+  currentCartMap = cartMap;
+  const itemsEl = document.getElementById('cartItems');
+  const ids = Object.keys(cartMap);
+  let count = 0, total = 0;
+
+  if(ids.length === 0){
+    itemsEl.innerHTML = '<div class="cart-empty">Tu carrito está vacío.</div>';
+  } else {
+    itemsEl.innerHTML = ids.map(id => {
+      const p = products.find(x => x.id === id);
+      const qty = cartMap[id].qty;
+      count += qty;
+      const lineTotal = p.price * qty;
+      total += lineTotal;
+      return `
+        <div class="cart-item">
+          <div class="thumb"></div>
+          <div>
+            <h5>${p.name}</h5>
+            <div class="meta">
+              <button class="qty-btn" data-action="dec" data-id="${id}" data-row="${cartMap[id].rowId}">-</button>
+              <span>${qty}</span>
+              <button class="qty-btn" data-action="inc" data-id="${id}" data-row="${cartMap[id].rowId}">+</button>
+              <span class="line-price">${fmt(lineTotal)}</span>
+            </div>
+          </div>
+          <button class="remove" data-action="remove" data-row="${cartMap[id].rowId}">Quitar</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartTotal').textContent = fmt(total);
+
+  itemsEl.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const action = btn.dataset.action;
+      const rowId = btn.dataset.row;
+      if(action === 'remove'){
+        await sb.from('cart_items').delete().eq('id', rowId);
+      } else {
+        const { data: row } = await sb.from('cart_items').select('*').eq('id', rowId).single();
+        const newQty = action === 'inc' ? row.quantity + 1 : row.quantity - 1;
+        if(newQty <= 0){
+          await sb.from('cart_items').delete().eq('id', rowId);
+        } else {
+          await sb.from('cart_items').update({ quantity: newQty }).eq('id', rowId);
+        }
+      }
+      loadCart();
+    });
+  });
+}
+
+document.getElementById('cartToggle').addEventListener('click', () => {
+  if(!currentUser){
+    authModal.classList.add('open');
+    authMsg.textContent = 'Inicia sesión para ver tu carrito.';
+    authMsg.className = 'modal-msg error';
+    return;
+  }
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+});
+document.getElementById('closeCart').addEventListener('click', closeCart);
+document.getElementById('overlay').addEventListener('click', closeCart);
+function closeCart(){
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+// IMPORTANTE: reemplaza esto por la URL real que te dé Netlify al desplegar
+// (algo como https://undesire-pagos.netlify.app), seguida de /.netlify/functions/create-preference
+const NETLIFY_FUNCTION_URL = '/.netlify/functions/create-preference';
+document.getElementById('checkoutBtn').addEventListener('click', async () => {
+  const ids = Object.keys(currentCartMap);
+  if(ids.length === 0){ alert('Tu carrito está vacío.'); return; }
+
+  const btn = document.getElementById('checkoutBtn');
+  btn.textContent = 'Procesando...';
+  btn.disabled = true;
+
+  const items = ids.map(id => {
+    const p = products.find(x => x.id === id);
+    return { name: p.name, price: p.price, quantity: currentCartMap[id].qty };
+  });
+
+  try {
+    const resp = await fetch(NETLIFY_FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items })
+    });
+    const data = await resp.json();
+    if(data.init_point){
+      window.location.href = data.init_point;
+    } else {
+      alert('No se pudo iniciar el pago. Intenta de nuevo en unos minutos.');
+      btn.textContent = 'Ir a pagar';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    alert('Esta función solo funciona una vez publicada en Netlify (no funciona abriendo el archivo local).');
+    btn.textContent = 'Ir a pagar';
+    btn.disabled = false;
+  }
+});
+
+renderShop();
+</script>
+
+</body>
+</html>
