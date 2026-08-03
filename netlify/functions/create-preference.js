@@ -13,7 +13,7 @@ const corsHeaders = {
 exports.handler = async (event) => {
   // El navegador manda esta petición "de prueba" antes del POST real; hay que responderla OK.
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: corsHeaders, body: '' };
+    return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ ok: true }) };
   }
 
   if (event.httpMethod !== 'POST') {
