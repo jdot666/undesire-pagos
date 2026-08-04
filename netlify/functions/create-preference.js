@@ -1,18 +1,16 @@
-// Esta función corre en el servidor de Netlify (nunca en el navegador),
-// por eso aquí SÍ es seguro usar el Access Token secreto de Mercado Pago.
+// netlify/functions/create-preference.js
 
-// IMPORTANTE: reemplaza esto por tu dominio real una vez lo tengas activo.
 const SITE_URL = 'https://undesire1.com';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type'
+  'Access-Control-Allow-Headers': 'Content-Type',
   'Cache-Control': 'no-store'
 };
 
 exports.handler = async (event) => {
-  // El navegador manda esta petición "de prueba" antes del POST real; hay que responderla OK.
+  // Manejo de pre-flight CORS
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ ok: true }) };
   }
@@ -32,7 +30,7 @@ exports.handler = async (event) => {
       items: items.map(i => ({
         title: i.name,
         quantity: i.quantity,
-        unit_price: i.price,
+        unit_price: Number(i.price),
         currency_id: 'CLP'
       })),
       back_urls: {
@@ -43,10 +41,16 @@ exports.handler = async (event) => {
       auto_return: 'approved'
     };
 
+    const mpAccessToken = process.env.MP_ACCESS_TOKEN;
+    if (!mpAccessToken) {
+      console.error('Falta la variable de entorno MP_ACCESS_TOKEN en Netlify');
+      return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: 'Configuración de servidor incompleta' }) };
+    }
+
     const resp = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        'Authorization': `Bearer ${mpAccessToken}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(preference)
@@ -56,17 +60,16 @@ exports.handler = async (event) => {
 
     if (!resp.ok) {
       console.error('Error de Mercado Pago:', data);
-      return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: 'No se pudo crear el pago' }) };
+      return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: 'No se pudo crear el pago', details: data }) };
     }
 
-    // init_point = link real de checkout de Mercado Pago con todo el carrito cargado
     return {
       statusCode: 200,
       headers: corsHeaders,
       body: JSON.stringify({ init_point: data.init_point })
     };
   } catch (e) {
-    console.error(e);
+    console.error('Exception:', e);
     return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: e.message }) };
   }
 };
