@@ -2,7 +2,6 @@
 
 const SITE_URL = 'https://undesire1.com';
 
-// Cabeceras CORS completas permitiendo tu dominio explícitamente o wildcard
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -11,12 +10,12 @@ const corsHeaders = {
 };
 
 exports.handler = async (event) => {
-  // Manejar Preflight Request (OPTIONS)
+  // Manejar Preflight (OPTIONS)
   if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: 204, // 204 No Content es lo standard para OPTIONS
+      statusCode: 200,
       headers: corsHeaders,
-      body: ''
+      body: JSON.stringify({ ok: true })
     };
   }
 
@@ -29,6 +28,16 @@ exports.handler = async (event) => {
   }
 
   try {
+    const mpAccessToken = process.env.MP_ACCESS_TOKEN;
+    if (!mpAccessToken) {
+      console.error('ERROR: No existe la variable MP_ACCESS_TOKEN en Netlify');
+      return {
+        statusCode: 500,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: 'Configuración de servidor incompleta (Falta MP_ACCESS_TOKEN)' })
+      };
+    }
+
     const { items } = JSON.parse(event.body || '{}');
 
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -41,9 +50,9 @@ exports.handler = async (event) => {
 
     const preference = {
       items: items.map(i => ({
-        title: i.name,
-        quantity: i.quantity,
-        unit_price: Number(i.price),
+        title: String(i.name || 'Producto'),
+        quantity: Number(i.quantity || 1),
+        unit_price: Number(i.price || 0),
         currency_id: 'CLP'
       })),
       back_urls: {
@@ -53,16 +62,6 @@ exports.handler = async (event) => {
       },
       auto_return: 'approved'
     };
-
-    const mpAccessToken = process.env.MP_ACCESS_TOKEN;
-    if (!mpAccessToken) {
-      console.error('Falta la variable MP_ACCESS_TOKEN en Netlify');
-      return {
-        statusCode: 500,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: 'Falta configuración de MP_ACCESS_TOKEN' })
-      };
-    }
 
     const resp = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
@@ -76,11 +75,11 @@ exports.handler = async (event) => {
     const data = await resp.json();
 
     if (!resp.ok) {
-      console.error('Error Mercado Pago:', data);
+      console.error('Error de Mercado Pago:', data);
       return {
-        statusCode: 500,
+        statusCode: resp.status,
         headers: corsHeaders,
-        body: JSON.stringify({ error: 'Error al generar preferencia', details: data })
+        body: JSON.stringify({ error: 'Error de Mercado Pago', details: data })
       };
     }
 
@@ -90,7 +89,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ init_point: data.init_point })
     };
   } catch (e) {
-    console.error('Exception:', e);
+    console.error('Error interno:', e.message);
     return {
       statusCode: 500,
       headers: corsHeaders,
